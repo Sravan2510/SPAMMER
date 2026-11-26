@@ -1,7 +1,8 @@
 import sqlite3
 from datetime import datetime
+from pathlib import Path
 
-DATABASE = "spammer_memory.db"
+DATABASE = Path(__file__).resolve().parent / "spammer_memory.db"
 
 
 def initialize_memory():

@@ -1,0 +1,4 @@
+# SPAMMER - Python Dependencies
+
+ollama==0.6.3
+rich==15.0.0

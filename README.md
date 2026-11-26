@@ -6,7 +6,7 @@ SPAMMER is a lightweight, locally running, Python-based AI assistant designed to
 
 It uses **Ollama** to run a language model locally, **Qwen 3.5 4B** as its configured model, **SQLite** for conversation and memory storage, and **Rich** for a formatted terminal interface.
 
-> **Project status — 20 November 2026:** The local chat foundation, conversation persistence, hybrid memory extraction, and interactive memory-management commands have been implemented. Basic code generation has also been tested through normal chat. A dedicated Code Assistant Mode, automatic code-file creation, and controlled code execution are not yet implemented.
+> **Project status — 26 November 2026:** The local chat foundation, conversation persistence, hybrid memory extraction, and interactive memory-management commands have been implemented. Basic code generation has also been tested through normal chat. A dedicated Code Assistant Mode, automatic code-file creation, and controlled code execution are not yet implemented.
 
 ---
 
@@ -19,12 +19,13 @@ It uses **Ollama** to run a language model locally, **Qwen 3.5 4B** as its confi
 5. [Database and memory design](#5-database-and-memory-design)
 6. [Current capabilities](#6-current-capabilities)
 7. [Setup and prerequisites](#7-setup-and-prerequisites)
-8. [Run SPAMMER](#8-run-spammer)
-9. [Available terminal commands](#9-available-terminal-commands)
-10. [Useful development commands](#10-useful-development-commands)
-11. [Current limitations](#11-current-limitations)
-12. [Development roadmap](#12-development-roadmap)
-13. [Privacy and local data](#13-privacy-and-local-data)
+8. [Installation guide](INSTALLATION.md)
+9. [Run SPAMMER](#9-run-spammer)
+10. [Available terminal commands](#10-available-terminal-commands)
+11. [Useful development commands](#11-useful-development-commands)
+12. [Current limitations](#12-current-limitations)
+13. [Development roadmap](#13-development-roadmap)
+14. [Privacy and local data](#14-privacy-and-local-data)
 
 ---
 
@@ -164,36 +165,42 @@ The current implementation uses Qwen for extraction and Python rules for validat
 
 ## 4. Project structure
 
-The project files known from development are organized approximately as follows:
+The public project files are organized as follows:
 
 ```text
 SPAMMER/
-├── .idea/
-├── .venv/
 ├── main.py
-├── main_backup.py
 ├── memory.py
-├── memory_backup.py
 ├── memory_extractor.py
-├── spammer_memory.db
 ├── test_memory.py
-└── SPAMMER.iml
+├── requirements.txt
+├── README.md
+├── INSTALLATION.md
+└── .gitignore
 ```
 
-| File or folder | Description |
+| File | Description |
 |---|---|
-| `.venv/` | Python virtual environment and project dependencies |
-| `.idea/` | IntelliJ IDEA project settings |
 | `main.py` | Main application, terminal chat loop and command handling |
 | `memory.py` | SQLite database setup, conversation functions and memory operations |
 | `memory_extractor.py` | Qwen-powered memory extraction, validation and hybrid memory processing |
-| `spammer_memory.db` | Local SQLite database |
-| `main_backup.py` | Backup copy of `main.py` |
-| `memory_backup.py` | Backup copy of `memory.py` |
-| `test_memory.py` | Test file; current contents and coverage have not been re-audited |
-| `SPAMMER.iml` | IntelliJ IDEA module file |
+| `test_memory.py` | Test file for memory-related functionality |
+| `requirements.txt` | Python dependency list |
+| `README.md` | Project overview, architecture, capabilities and development information |
+| `INSTALLATION.md` | Installation instructions for macOS and Windows |
+| `.gitignore` | Excludes local files and other files that should not be committed |
 
-The backup files are safety copies, not separate application modules. This structure is based on the files identified during development and has not been re-audited as a complete directory listing.
+### Local development files
+
+The following files and folders may exist in a developer's local copy but are not part of the public application structure:
+
+- `.venv/` — Python virtual environment.
+- `.idea/` — IntelliJ IDEA project settings.
+- `spammer_memory.db` — Local SQLite database.
+- `main_backup.py` and `memory_backup.py` — Local backup copies.
+- `SPAMMER.iml` — IntelliJ IDEA module file.
+
+These files are not required to be included in the public repository.
 
 ## 5. Database and memory design
 
@@ -239,18 +246,14 @@ Related functions:
 - `get_memories_with_ids()` — retrieves saved memories with their IDs.
 - `delete_memory(memory_id)` — deletes a permanent memory by ID.
 
-The latest verified database state contains six permanent memories:
+Example memory categories include:
 
-| ID | Category | Information |
-|---:|---|---|
-| 1 | Project | Favourite project is Virtual AYUSH Herbal Garden |
-| 2 | Preference | Prefers step-by-step explanations |
-| 3 | Preference | Prefers learning Python through practical coding examples |
-| 5 | Projects | Changing career direction to AI engineering |
-| 6 | Preference | Enjoys building small applications using Python and SQLite |
-| 7 | Projects | Enjoys building small applications using Python and SQLite |
+- Preferences
+- Projects
+- Learning interests
+- Skills
 
-IDs are not consecutive because records were created and deleted during testing. IDs 6 and 7 contain the same information under different categories. This cross-category duplication is known and has not been changed.
+The examples above describe possible categories, not actual user records.
 
 ### 5.3 `memory_candidates`
 
@@ -344,7 +347,7 @@ The following workflows were tested through the running application:
 - `help` displayed the available commands.
 - `exit` closed the application normally.
 
-After the deletion test, the database was checked again. The six original memories remained, the temporary test memory was absent, and there were no pending candidates.
+Temporary test records were used to verify the memory-management workflows.
 
 ## 7. Setup and prerequisites
 
@@ -356,7 +359,7 @@ The current development environment:
 - Ollama installed locally.
 - Qwen 3.5 4B available in Ollama.
 
-The project uses a virtual environment named `.venv`.
+The project uses a Python virtual environment named `.venv`.
 
 ### Create a virtual environment (if setting up from scratch)
 
@@ -368,8 +371,16 @@ python3 -m venv .venv
 
 ### Activate the environment
 
+On macOS:
+
 ```bash
 source .venv/bin/activate
+```
+
+On Windows:
+
+```powershell
+.venv\Scripts\activate
 ```
 
 The terminal prompt should begin with `(.venv)` when the environment is active.
@@ -377,7 +388,7 @@ The terminal prompt should begin with `(.venv)` when the environment is active.
 ### Install Python packages
 
 ```bash
-pip install ollama rich
+python -m pip install -r requirements.txt
 ```
 
 ### Confirm Ollama and the model are available
@@ -408,14 +419,40 @@ ollama pull qwen3.5:4b
 
 Ollama must be running for SPAMMER to generate model responses.
 
-## 8. Run SPAMMER
+For complete installation instructions covering macOS and Windows, see the [SPAMMER Installation Guide](INSTALLATION.md).
 
-Open the SPAMMER project in IntelliJ IDEA.
+## 8. Installation guide
 
-Open the integrated terminal and activate the virtual environment if necessary:
+New users should follow the separate installation guide:
+
+**[Read the SPAMMER Installation Guide](INSTALLATION.md)**
+
+It covers:
+
+- Downloading the project.
+- Creating a Python virtual environment.
+- Installing Python dependencies.
+- Installing Ollama.
+- Downloading the configured AI model.
+- Starting SPAMMER.
+- Basic troubleshooting.
+
+## 9. Run SPAMMER
+
+Open the SPAMMER project in a terminal or in IntelliJ IDEA.
+
+Activate the virtual environment if necessary.
+
+On macOS:
 
 ```bash
 source .venv/bin/activate
+```
+
+On Windows:
+
+```powershell
+.venv\Scripts\activate
 ```
 
 Run the application:
@@ -438,13 +475,21 @@ quit
 
 ### IntelliJ interpreter note
 
-The integrated terminal has successfully run Python using the activated `.venv`. If IntelliJ reports that no Python interpreter is configured for the module, configure the project/module interpreter to use:
+Configure the project interpreter to use the Python executable inside the project's `.venv` directory.
+
+On macOS, the path is:
 
 ```text
 <project-folder>/.venv/bin/python
 ```
 
-## 9. Available terminal commands
+On Windows, the path is:
+
+```text
+<project-folder>\.venv\Scripts\python.exe
+```
+
+## 10. Available terminal commands
 
 Enter these commands at the SPAMMER prompt:
 
@@ -460,21 +505,23 @@ Enter these commands at the SPAMMER prompt:
 
 These are local application commands. They are handled by Python and are not sent to Qwen as ordinary chat messages.
 
-## 10. Useful development commands
+## 11. Useful development commands
 
 Run these from the project root with `.venv` activated.
 
 | Purpose | Command |
 |---|---|
-| Activate virtual environment | `source .venv/bin/activate` |
+| Activate virtual environment (macOS) | `source .venv/bin/activate` |
+| Activate virtual environment (Windows) | `.venv\Scripts\activate` |
 | Run SPAMMER | `python main.py` |
+| Install dependencies | `python -m pip install -r requirements.txt` |
+| Check dependencies | `python -m pip check` |
 | Compile main application | `python -m py_compile main.py` |
 | Compile memory modules | `python -m py_compile memory.py memory_extractor.py` |
-| List permanent memories and pending candidates | `python -c "from memory import get_memories_with_ids, get_pending_candidates; print('MEMORIES:', get_memories_with_ids()); print('PENDING:', get_pending_candidates())"` |
 | List Ollama models | `ollama list` |
 | Check Ollama version | `ollama --version` |
 
-## 11. Current limitations
+## 12. Current limitations
 
 SPAMMER is a working local assistant, but some capabilities are not yet implemented:
 
@@ -488,7 +535,7 @@ SPAMMER is a working local assistant, but some capabilities are not yet implemen
 8. **Simple context management:** Conversation history uses a recent-message limit rather than advanced token budgeting.
 9. **Generated-code safety:** Generated code should be reviewed before execution. Any future execution feature must use a controlled approach rather than blindly running arbitrary model output.
 
-## 12. Development roadmap
+## 13. Development roadmap
 
 The roadmap is intentionally small and focused on a useful SPAMMER 1.0.
 
@@ -527,10 +574,11 @@ Code generation, file creation and code execution are separate capabilities. The
 - Improve conversation context management.
 - Add support for creating small multi-file projects.
 - Improve automated tests and error handling.
+- Complete clean-install testing on supported operating systems.
 
 Advanced agents, cloud deployment, RAG and a graphical interface are not immediate priorities.
 
-## 13. Privacy and local data
+## 14. Privacy and local data
 
 SPAMMER is designed as a local-first assistant.
 
@@ -557,4 +605,4 @@ Local model execution and local SQLite storage do not, by themselves, guarantee 
 
 **Not yet implemented:** Automatic code-file creation, controlled code execution and execution-result-based debugging.
 
-SPAMMER is now more than a basic local chatbot. It has a working conversational foundation, persistent memory and interactive memory management. The next practical milestone is to make its coding assistance more useful without making the project unnecessarily complicated.
+SPAMMER is more than a basic local chatbot. It has a working conversational foundation, persistent memory and interactive memory management. The next practical milestone is to make its coding assistance more useful without making the project unnecessarily complicated.
