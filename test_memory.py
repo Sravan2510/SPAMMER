@@ -1,18 +1,30 @@
 
-from memory import (
-    initialize_memory,
-    save_message,
-    get_recent_messages
-)
+import tempfile
+from pathlib import Path
 
-initialize_memory()
+import memory
 
-save_message("user", "Hello SPAMMER!")
-save_message("assistant", "Hello! How can I help you?")
 
-messages = get_recent_messages()
+def test_memory():
 
-print("\nSaved conversations:")
+    # Use a temporary database instead of the personal database.
+    with tempfile.TemporaryDirectory() as temp_dir:
 
-for message in messages:
-    print(f"{message['role']}: {message['content']}")
+        memory.DATABASE = Path(temp_dir) / "test_spammer.db"
+
+        memory.initialize_memory()
+
+        memory.save_message("user", "Hello SPAMMER!")
+        memory.save_message("assistant", "Hello! How can I help you?")
+
+        messages = memory.get_recent_messages()
+
+        assert len(messages) == 2
+        assert messages[0]["role"] == "user"
+        assert messages[1]["role"] == "assistant"
+
+        print("Memory test passed successfully!")
+
+
+if __name__ == "__main__":
+    test_memory()
