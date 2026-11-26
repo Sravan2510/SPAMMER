@@ -404,8 +404,8 @@ def main():
                 )
 
                 console.print(
-                    "[yellow]Approval functionality will be "
-                    "available in the next update.[/yellow]"
+                    "[yellow]Review this memory using the 'pending' command, "
+                    "then approve or reject it.[/yellow]"
                 )
 
         except Exception as memory_error:
